@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6557e8">
+<title>eMessage — Enhanced</title>
+<style>
+:root{--bg:#f4f5fa;--card:#fff;--text:#202033;--muted:#85859b;--line:#e9e9f1;--accent:#6557e8;--soft:#f0efff;--green:#20b887}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+#auth{min-height:100vh;display:grid;place-items:center;padding:20px}.authcard{width:min(430px,100%);background:white;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 20px 60px #29225a12}.logo{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:850}.logo b{color:var(--accent)}.mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#6557e8,#a29aff);color:#fff;display:grid;place-items:center;font-size:24px}
+h1{font-size:24px;margin:24px 0 5px}.muted{color:var(--muted)}label{display:block;font-size:13px;font-weight:650;margin:13px 0 6px}input,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fafaff;outline:none}input:focus,textarea:focus{border-color:var(--accent)}.primary{border:0;background:var(--accent);color:white;padding:12px 16px;border-radius:12px;font-weight:700}.wide{width:100%;margin-top:18px}.linkbtn{border:0;background:none;color:var(--accent);font-weight:700;padding:8px}.note{font-size:12px;color:var(--muted);line-height:1.5}
+#app{min-height:100vh}.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:5}.topbar .logo{font-size:22px}.layout{max-width:1200px;margin:22px auto;padding:0 16px;display:grid;grid-template-columns:310px 1fr;gap:18px}.sidebar,.maincard{background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}.sidebar{padding:14px}.profileline{display:flex;align-items:center;gap:10px;padding:8px}.avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#e9e7ff;flex-shrink:0}.profileline .info{flex:1;min-width:0}.profileline strong{display:block;overflow:hidden;text-overflow:ellipsis}.profileline small{color:var(--muted)}.navtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:14px 0}.navbtn{border:0;background:#f5f4fc;color:#77728f;border-radius:10px;padding:10px 3px;font-size:12px;font-weight:700}.navbtn.active{background:var(--soft);color:var(--accent)}.search{margin:8px 0 12px}.section{font-size:11px;letter-spacing:1px;font-weight:800;color:var(--muted);padding:12px 8px 7px}.user{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:12px;cursor:pointer}.user:hover{background:#faf9ff}.user .meta{flex:1;min-width:0}.user .meta strong,.user .meta small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user .meta small{color:var(--muted);font-size:12px}.useractions{display:flex;gap:5px}.mini{border:0;background:var(--soft);color:var(--accent);border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}.maincard{min-height:580px;display:flex;flex-direction:column}.chathead{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}.chathead .peerinfo{flex:1}.chathead strong{display:block}.chathead small{color:var(--muted)}.welcome{flex:1;display:grid;place-items:center;text-align:center;padding:30px;color:var(--muted)}.welcome h2{color:var(--text)}.messages{padding:18px;flex:1;overflow:auto;min-height:360px;max-height:60vh}.bubble{max-width:75%;padding:11px 14px;border-radius:16px;margin:8px 0;background:#f0eff8;overflow-wrap:anywhere}.bubble.mine{margin-left:auto;background:var(--accent);color:white}.bubble small{display:block;font-size:10px;opacity:.7;margin-top:5px}.composer{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}.composer input{flex:1}.viewpanel{padding:8px 18px;overflow:auto}.profilecard{padding:20px}.profilecard h2{margin:8px 0}.profilecard p{color:var(--muted);line-height:1.5}.profilefield{margin:10px 0}.profilefield b{display:block;font-size:12px;color:var(--muted)}.profilefield span{display:block;margin-top:3px}.banner{margin:8px;padding:12px;background:#f0efff;border-radius:12px;font-size:12px}.personname{font-weight:750}.username{font-size:12px;color:var(--muted)}#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#25233b;color:white;padding:12px 18px;border-radius:12px;display:none;z-index:99;max-width:90%;box-shadow:0 8px 30px #0002}
+.modalback{position:fixed;inset:0;background:#17152b66;z-index:30;display:grid;place-items:center;padding:16px}.modal{background:white;border-radius:20px;padding:22px;width:min(480px,100%);max-height:90vh;overflow:auto}.modalactions{display:flex;gap:10px;margin-top:18px}\n.toolbar{display:flex;gap:8px;align-items:center}.toolbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;color:var(--text);font-weight:700}.bubble-tools{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.bubble-tools button{border:0;border-radius:7px;padding:4px 7px;background:#ffffff30;color:inherit;font-size:11px}.bubble:not(.mine) .bubble-tools button{background:#e7e4f7;color:#4b437e}.bubble .replyquote{font-size:12px;padding:7px 9px;border-left:3px solid #aaa;border-radius:6px;background:#00000008;margin-bottom:7px}.statusline{font-size:11px;color:var(--muted);padding:6px 14px}.notificationbox{margin:8px;padding:10px;border-radius:12px;background:#fff7df;color:#6b4b00;font-size:12px}.typing{font-size:12px;color:var(--muted);padding:0 18px 8px}.dark{--bg:#171827;--card:#222438;--text:#f3f2ff;--muted:#a6a7bd;--line:#373950;--soft:#34304f}.dark .topbar,.dark .sidebar,.dark .maincard,.dark .authcard,.dark .modal{background:#222438;color:var(--text);border-color:var(--line)}.dark input,.dark textarea{background:#191b2c;color:var(--text);border-color:var(--line)}.dark .navbtn{background:#2b2d42;color:#c2c0d5}.dark .navbtn.active{background:#39325e;color:#d5ceff}.dark .chathead{background:#24263a}.dark .messages{background-color:#1c1e30}.dark .bubble:not(.mine){background:#303249;color:#f3f2ff}.dark .toolbtn{background:#2b2d42;color:#fff;border-color:#41435a}
+
+/* Fresh, lively eMessage wallpaper */
+body{
+ background-color:#f4f3fb;
+ background-image:
+   radial-gradient(circle at 15% 20%,rgba(153,139,255,.12) 0 3px,transparent 4px),
+   radial-gradient(circle at 80% 70%,rgba(255,170,196,.13) 0 4px,transparent 5px),
+   linear-gradient(135deg,#f8f7ff 0%,#f1f5ff 50%,#fff4f8 100%);
+ background-attachment:fixed;
+}
+.sidebar{
+ background:
+  radial-gradient(circle at 95% 8%,rgba(176,164,255,.14),transparent 24%),
+  #fff;
+}
+.maincard{
+ background:#fff;
+ box-shadow:0 12px 40px rgba(75,62,150,.07);
+}
+.chathead{
+ background:linear-gradient(110deg,#fff 0%,#faf9ff 60%,#fff7fb 100%);
+}
+.messages{
+ background-color:#f7f5ef;
+ background-image:
+  radial-gradient(circle at 20px 22px,rgba(101,87,232,.11) 1.5px,transparent 2px),
+  radial-gradient(circle at 70px 65px,rgba(236,130,168,.10) 2px,transparent 2.5px),
+  radial-gradient(circle at 42px 90px,rgba(101,87,232,.07) 3px,transparent 3.5px),
+  repeating-linear-gradient(45deg,transparent 0 28px,rgba(101,87,232,.025) 28px 29px,transparent 29px 56px);
+ background-size:100px 100px,130px 130px,160px 160px,90px 90px;
+}
+.bubble{
+ box-shadow:0 2px 5px rgba(40,35,75,.035);
+}
+.bubble.mine{
+ background:linear-gradient(135deg,#6557e8,#7769f0);
+}
+.welcome{
+ background:
+  radial-gradient(circle at 15% 20%,rgba(160,145,255,.12),transparent 25%),
+  radial-gradient(circle at 85% 80%,rgba(255,164,194,.13),transparent 28%),
+  #fbfaff;
+}
+.welcome h2{letter-spacing:-.4px}
+
+@media(max-width:760px){.layout{grid-template-columns:1fr;margin:10px auto}.sidebar{order:1}.maincard{order:2;min-height:520px}.topbar{padding:0 12px}.messages{max-height:50vh}.useractions .mini{padding:7px 6px}}
+
+/* eMessage organized dark redesign */
+:root{
+ --bg:#080b14;--card:#111827;--text:#edf2ff;--muted:#9ba8bd;
+ --line:#263247;--accent:#7c6cff;--soft:#24213f;--green:#31d6a0;
+}
+body{
+ background:#080b14!important;color:var(--text);
+ background-image:radial-gradient(ellipse at 10% 0%,#18143b 0,transparent 42%),
+                  radial-gradient(ellipse at 90% 100%,#10253a 0,transparent 38%)!important;
+}
+#auth{background:transparent}
+.authcard,.topbar,.sidebar,.maincard,.modal,.profilecard,.viewpanel{
+ background:#111827!important;color:var(--text)!important;border-color:#263247!important;
+}
+.topbar{box-shadow:0 8px 30px #0004}
+.layout{max-width:1280px;grid-template-columns:280px minmax(0,1fr);gap:14px;margin:14px auto}
+.sidebar,.maincard{border-radius:18px;box-shadow:0 12px 40px #0003}
+.navtabs{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.navbtn{background:#1b2435;color:#aab6cb;padding:11px 3px;font-size:11px}
+.navbtn.active{background:#342d62;color:#e3deff;box-shadow:inset 0 0 0 1px #6254c7}
+input,textarea{background:#0b1220!important;color:#f2f5ff!important;border-color:#2b3950!important}
+input::placeholder,textarea::placeholder{color:#7e8ba3}
+.user:hover{background:#1b2435}
+.chathead{background:#111827!important;border-color:#263247}
+.messages{background:#0b1220!important;background-image:
+ radial-gradient(circle at 20px 22px,#7c6cff18 1.5px,transparent 2px),
+ radial-gradient(circle at 70px 65px,#55c9ff12 2px,transparent 2.5px)!important}
+.welcome{background:radial-gradient(circle at 15% 20%,#7c6cff15,transparent 28%),#0d1422!important;color:#aab6cb}
+.welcome h2{color:#f1f4ff}
+.bubble:not(.mine){background:#202b3d!important;color:#edf2ff!important}
+.bubble.mine{background:linear-gradient(135deg,#6557e8,#8b78ff)!important}
+.bubble-tools button{background:#344159!important;color:#e7edff!important}
+.toolbtn,.mini{background:#202b3d!important;color:#e3eaff!important;border-color:#344159!important}
+.banner{background:#272143!important;color:#e7e2ff}
+.notificationbox{background:#382d16!important;color:#ffe3a2}
+.section{color:#91a0b8}
+.profileline small,.chathead small,.user .meta small{color:#9ba8bd}
+.modalback{background:#020617bb}
+#toast{background:#e7eaff;color:#101426}
+#messages{scroll-behavior:smooth}
+.navtabs{position:sticky;top:68px;z-index:4}
+#followingPanel .user,#friendsPanel .user,#chatsPanel .user{border:1px solid #263247;margin:5px 0}
+.statrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.statpill{background:#202b3d;border:1px solid #344159;padding:8px 12px;border-radius:12px;font-size:12px;color:#dce5ff}
+.appintro{padding:14px;border-radius:14px;background:#151e30;margin:8px 0;color:#aab6cb;font-size:13px}
+.mobilebar{display:none}
+@media(max-width:760px){
+ .layout{grid-template-columns:1fr;padding:0 10px}
+ .sidebar{order:1}.maincard{order:2;min-height:480px}
+ .navtabs{top:68px;grid-template-columns:repeat(5,minmax(0,1fr));}
+ .navbtn{font-size:10px;padding:10px 1px}
+ .topbar{height:60px}
+ .mobilebar{display:flex;position:sticky;bottom:0;z-index:8;background:#111827;border-top:1px solid #263247;justify-content:space-around;padding:8px}
+}
+
+
+.navtabs{grid-template-columns:repeat(6,minmax(0,1fr))}
+.ai-workspace{flex:1;min-height:540px;display:flex;flex-direction:column;background:#0b1220;color:#edf2ff}
+.ai-top{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #263247;background:#111827}
+.ai-title{font-size:18px;font-weight:850}.ai-subtitle{font-size:12px;color:#9ba8bd;margin-top:3px}
+.ai-messages{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;min-height:350px}
+.ai-welcome{max-width:620px;margin:auto;text-align:center;padding:22px 8px}
+.ai-orb{width:58px;height:58px;border-radius:20px;margin:0 auto 12px;display:grid;place-items:center;font-size:30px;color:white;background:linear-gradient(135deg,#6557e8,#20b9c9);box-shadow:0 8px 28px #6557e855}
+.ai-welcome h2{color:#f3f5ff;margin:8px 0}.ai-welcome p{color:#9ba8bd;line-height:1.6}
+.ai-suggestions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:20px}
+.ai-suggestions button{border:1px solid #344159;background:#172338;color:#e6ebff;border-radius:12px;padding:12px 9px;font-size:12px}
+.ai-bubble{max-width:min(88%,760px);padding:13px 16px;border-radius:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai-bubble.user{align-self:flex-end;background:#5143c9;color:#fff;border-bottom-right-radius:5px}
+.ai-bubble.assistant{align-self:flex-start;background:#172338;border:1px solid #2b3950;color:#edf2ff;border-bottom-left-radius:5px}
+.ai-bubble .ai-label{display:block;font-size:10px;opacity:.65;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+.ai-form{display:flex;gap:10px;padding:14px;border-top:1px solid #263247;background:#111827;align-items:flex-end}
+.ai-form textarea{resize:vertical;min-height:46px;max-height:150px;flex:1;border-radius:14px}
+.ai-disclaimer{text-align:center;font-size:10px;color:#8391a9;padding:0 12px 12px;background:#111827}
+.ai-typing{color:#aeb9ce;font-size:12px;padding:8px 14px}
+@media(max-width:760px){.navtabs{grid-template-columns:repeat(3,minmax(0,1fr))}.ai-workspace{min-height:68vh}.ai-messages{padding:14px}.ai-suggestions{grid-template-columns:1fr}.ai-bubble{max-width:96%}.ai-top{padding:12px}}
+
+</style>
+</head>
+<body>
+<section id="auth">
+ <div class="authcard">
+  <div class="logo"><span class="mark">✉</span><span>e<b>Message</b></span></div>
+  <h1 id="authTitle">Create your account</h1><p class="muted" id="authSubtitle">Join your friends on eMessage.</p>
+  <form id="authForm">
+   <div id="signupFields">
+    <label>Username</label><input id="username" minlength="3" maxlength="20" placeholder="choose_a_username" autocomplete="username">
+    <label>Display name</label><input id="displayName" maxlength="40" placeholder="Your name">
+   </div>
+   <label>Email</label><input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+   <label>Password</label><input id="password" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters">
+   <button class="primary wide" id="authSubmit" type="submit">Create account</button>
+  </form>
+  <p style="text-align:center;margin-bottom:0"><span id="authSwitchText">Already have an account?</span> <button class="linkbtn" id="authSwitch">Log in</button></p>
+  <p class="note">Use a password you don't use on other websites. eMessage is a starter app; don't store sensitive information here.</p>
+ </div>
+</section>
+<section id="app" class="hidden">
+ <header class="topbar"><div class="logo"><span class="mark">✉</span><span>e<b>Message</b></span></div><div class="toolbar"><button class="toolbtn" id="notifyToggle" title="Enable browser notifications">🔔 Notifications</button><button class="toolbtn" id="themeToggle" title="Toggle theme">☀️ Theme</button><button class="linkbtn" id="logout">Log out</button></div></header>
+ <div class="layout">
+  <aside class="sidebar">
+   <div class="profileline"><img class="avatar" id="myAvatar" alt="Profile"><div class="info"><strong id="myName">My profile</strong><small id="myBioPreview">Welcome to eMessage</small></div><button class="linkbtn" id="editProfile">Edit</button></div>
+   <div class="navtabs">
+    <button class="navbtn active" data-view="home">🏠 Home</button><button class="navbtn" data-view="chats">💬 Chats</button><button class="navbtn" data-view="friends">👥 Friends</button><button class="navbtn" data-view="following">➕ Following</button><button class="navbtn" data-view="ai">✨ AI</button><button class="navbtn" data-view="profile">👤 Me</button>
+   </div>
+   <input class="search" id="searchUsers" placeholder="Search names or usernames…">
+   <div id="homePanel" class="viewpanel"><div class="section">PEOPLE YOU MAY KNOW</div><div id="peopleList" class="muted">Loading people…</div></div>
+   <div id="friendsPanel" class="viewpanel hidden"><div class="section">YOUR FRIENDS</div><div id="friendsList" class="muted">No friends yet.</div></div>
+   <div id="chatsPanel" class="viewpanel hidden"><div class="section">YOUR CONVERSATIONS</div><div class="appintro">All your chats are collected here. Tap a person to open the conversation.</div><div id="chatList" class="muted">Your chats will appear here.</div></div>
+   <div id="followingPanel" class="viewpanel hidden"><div class="section">PEOPLE YOU FOLLOW</div><div id="followingList" class="muted">You are not following anyone yet.</div></div>
+   <div id="profilePanel" class="viewpanel hidden"><div class="section">MY PROFILE</div><div id="profileCard" class="profilecard"></div></div>
+   <div id="aiPanel" class="viewpanel hidden"><div class="section">EMESSAGE AI</div><div class="appintro">Ask questions, understand difficult topics, solve practice problems, or get help planning school assignments.</div><div class="statrow"><span class="statpill">📚 Study help</span><span class="statpill">🧠 Explanations</span><span class="statpill">✍️ Writing help</span></div><p class="note">AI can make mistakes. Check important answers and follow your school’s rules.</p></div>
+  </aside>
+  <main class="maincard">
+   <div class="chathead"><img class="avatar hidden" id="peerAvatar" alt=""><div class="peerinfo"><strong id="peerName">Welcome to eMessage</strong><small id="peerStatus">Find friends and start a conversation.</small></div></div>
+   <div id="welcome" class="welcome"><div><div style="font-size:45px">💬</div><h2>Welcome to eMessage</h2><p>Simple, private conversations with your friends.</p><p>Use Home to find people, Friends to see your connections, Following to see people you follow, and Chats for messages.</p></div></div>
+   <div id="messages" class="messages hidden"></div><div id="typingStatus" class="typing"></div><div id="replyPreview" class="statusline hidden"></div>
+   <form id="composer" class="composer hidden"><input id="messageInput" maxlength="5000" placeholder="Write a message…" autocomplete="off"><button class="primary" id="sendButton">Send</button></form>
+   <section id="aiWorkspace" class="ai-workspace hidden" aria-label="eMessage AI assistant">
+    <div class="ai-top"><div><div class="ai-title">✨ eMessage AI</div><div class="ai-subtitle">Ask anything. Learn something new.</div></div><button class="toolbtn" id="newAIChat">＋ New chat</button></div>
+    <div id="aiMessages" class="ai-messages">
+     <div class="ai-welcome"><div class="ai-orb">✦</div><h2>Hi! I’m eMessage AI.</h2><p>I can explain topics, help with homework, solve practice questions, brainstorm ideas, and help you write.</p>
+      <div class="ai-suggestions"><button type="button" data-prompt="Explain photosynthesis in simple terms and give me an example.">🌱 Explain a topic</button><button type="button" data-prompt="Help me understand how to solve quadratic equations step by step.">➗ Solve a problem</button><button type="button" data-prompt="Help me plan and structure a school assignment about climate change.">📚 Plan an assignment</button></div>
+     </div>
+    </div>
+    <form id="aiForm" class="ai-form"><textarea id="aiInput" rows="1" maxlength="8000" placeholder="Ask eMessage AI anything…"></textarea><button class="primary" id="aiSend" type="submit">Send ↑</button></form>
+    <div class="ai-disclaimer">AI can be inaccurate. Review answers before submitting schoolwork.</div>
+   </section>
+  </main>
+ </div>
+</section>
+<div id="profileModal" class="modalback hidden"><div class="modal">
+ <h2 style="margin-top:0">Edit your profile</h2>
+ <label>Display name</label><input id="editDisplayName" maxlength="40">\n <label>Username</label><input id="editUsername" maxlength="20" autocomplete="username">
+ <label>Bio</label><textarea id="editBio" maxlength="240" rows="3"></textarea>
+ <label>Date of birth (optional)</label><input id="editDob" type="date">
+ <label>Profile photo (optional)</label><input id="editPhoto" type="file" accept="image/*">
+ <p class="note">Your birthday is kept in your profile. Avoid sharing sensitive personal information.</p>
+ <div class="modalactions"><button class="primary" id="saveProfile">Save profile</button><button class="mini" id="cancelProfile">Cancel</button></div>
+</div></div>
+<div id="toast"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, serverTimestamp, orderBy, limit, addDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-storage.js";
+import { getDatabase, ref as dbRef, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-ai.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBMvDg2aPLl6MuWRCMoLIBHJgJEwnUhRJo",
+ authDomain:"emessage-d7100.firebaseapp.com",
+ projectId:"emessage-d7100",
+ storageBucket:"emessage-d7100.firebasestorage.app",
+ messagingSenderId:"881814770797",
+ appId:"1:881814770797:web:8a9f1f7e06d343d08d1b64",
+ measurementId:"G-N0LETWQV1S"
+};
+const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app), storage=getStorage(app), rtdb=getDatabase(app);
+const firebaseAI=getAI(app,{backend:new GoogleAIBackend()});
+const aiModel=getGenerativeModel(firebaseAI,{model:"gemini-3.8-flash",generationConfig:{maxOutputTokens:1200,thinkingConfig:{thinkingLevel:"LOW"}},systemInstruction:"You are eMessage AI, a friendly, patient, helpful assistant for a general audience, including students. Answer a wide range of questions clearly. For schoolwork, teach the concepts, show steps, give examples, and help students understand rather than merely giving unexplained answers. Adapt explanations to the user’s level. If a question is ambiguous, ask a brief clarifying question. Be honest when uncertain, do not invent sources or facts, and remind users to verify important information. Format answers with readable paragraphs and numbered steps when useful."});
+let aiChatSession=aiModel.startChat(), aiBusy=false;
+const $=id=>document.getElementById(id);
+let signup=true, me=null, profile={}, allUsers=[], chatUnsub=null, peopleUnsub=null, chatsUnsub=null, requestsUnsub=null, presenceUnsub=null, activePeer=null, activeChatId=null, requestIds=new Set();
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').style.display='none',4500)}
+function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function avatarURL(url,name='eMessage'){return url||`https://ui-avatars.com/api/?name=${encodeURIComponent(name||'eMessage')}&background=ebe8ff&color=6557e8`}
+function setAuthMode(isSignup){signup=isSignup;$('authTitle').textContent=signup?'Create your account':'Welcome back';$('authSubtitle').textContent=signup?'Join your friends on eMessage.':'Log in to continue.';$('signupFields').classList.toggle('hidden',!signup);$('authSubmit').textContent=signup?'Create account':'Log in';$('authSwitchText').textContent=signup?'Already have an account?':"Don't have an account?";$('authSwitch').textContent=signup?'Log in':'Sign up'}
+$('authSwitch').onclick=()=>setAuthMode(!signup);
+$('authForm').onsubmit=async e=>{e.preventDefault();const email=$('email').value.trim(),password=$('password').value;try{
+ if(signup){const username=$('username').value.trim().toLowerCase(),displayName=$('displayName').value.trim()||username;
+ if(!/^[a-z0-9_]{3,20}$/.test(username))throw Error('Username must be 3–20 characters: letters, numbers or underscores.');
+ const userCredential=await createUserWithEmailAndPassword(auth,email,password),user=userCredential.user;
+ // Username uniqueness is checked by reading the reservation document. Rules must permit this check.
+ const unameRef=doc(db,'usernames',username),existing=await getDoc(unameRef);
+ if(existing.exists()){await signOut(auth);throw Error('That username is already taken. Choose another.')}
+ await setDoc(unameRef,{uid:user.uid,username,createdAt:serverTimestamp()});
+ await setDoc(doc(db,'users',user.uid),{uid:user.uid,username,displayName,bio:'',dob:'',photoURL:'',friends:[],createdAt:serverTimestamp()});
+ toast('Account created! Welcome to eMessage.');
+ }else{await signInWithEmailAndPassword(auth,email,password)}
+ }catch(err){console.error(err);toast(err.message||'Could not complete account action')}
+};
+$('logout').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async user=>{
+ if(user){me=user;$('auth').classList.add('hidden');$('app').classList.remove('hidden');await loadMyProfile();setupPresence();subscribePeople();subscribeChats();subscribeFriendRequests();renderProfile();}
+ else{me=null;$('app').classList.add('hidden');$('auth').classList.remove('hidden');}
+});
+async function loadMyProfile(){const s=await getDoc(doc(db,'users',me.uid));profile=s.exists()?s.data():{uid:me.uid,username:me.email?.split('@')[0],displayName:me.email?.split('@')[0],bio:'',dob:'',friends:[]};$('myName').textContent=profile.displayName||profile.username;$('myBioPreview').textContent=profile.bio||('@'+profile.username);$('myAvatar').src=avatarURL(profile.photoURL,profile.displayName||profile.username)}
+function setupPresence(){const statusRef=dbRef(rtdb,'presence/'+me.uid),connectedRef=dbRef(rtdb,'.info/connected');onValue(connectedRef,s=>{if(s.val()===true){onDisconnect(statusRef).set({state:'offline',lastChanged:Date.now()});set(statusRef,{state:'online',lastChanged:Date.now()})}})}
+function subscribePeople(){if(peopleUnsub)peopleUnsub();peopleUnsub=onSnapshot(query(collection(db,'users'),limit(100)),snap=>{allUsers=snap.docs.map(d=>d.data()).filter(u=>u.uid!==me.uid);renderPeople($('searchUsers').value);renderFriends();renderFollowing();subscribeFriendRequests() },err=>toast('Could not load users: '+err.message))}
+function renderPeople(term=''){const list=$('peopleList');list.innerHTML='';const arr=allUsers.filter(u=>`${u.displayName||''} ${u.username||''}`.toLowerCase().includes(term.toLowerCase()));if(!arr.length){list.innerHTML='<div style="padding:12px">No people found yet. Invite friends to join eMessage.</div>';return}
+ arr.forEach(u=>{const el=document.createElement('div');el.className='user';el.innerHTML=`<img class="avatar" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><div class="meta"><strong>${esc(u.displayName||u.username||'Member')}</strong><small>@${esc(u.username||'')} · ${Array.isArray(u.friends)?u.friends.length:0} friends</small><small>${esc(u.bio||'')}</small></div><div class="useractions"><button class="mini add">Add</button><button class="mini follow">Follow</button><button class="mini chat">Chat</button></div>`;
+ el.querySelector('.add').onclick=async e=>{e.stopPropagation();try{const requestId=me.uid+'_'+u.uid;await setDoc(doc(db,'friendRequests',requestId),{from:me.uid,to:u.uid,status:'pending',createdAt:serverTimestamp()});toast('Friend request sent!')}catch(err){toast(err.message)}};
+ el.querySelector('.follow').onclick=async e=>{e.stopPropagation();try{const following=new Set(profile.following||[]);if(following.has(u.uid)){following.delete(u.uid);await updateDoc(doc(db,'users',me.uid),{following:arrayRemove(u.uid)});toast('Unfollowed')}else{following.add(u.uid);await updateDoc(doc(db,'users',me.uid),{following:arrayUnion(u.uid)});toast('Now following '+(u.displayName||u.username))}profile.following=[...following];renderFollowing();}catch(err){toast('Follow action failed: '+err.message)}};
+  el.querySelector('.chat').onclick=e=>{e.stopPropagation();startChat(u)};
+ onValue(dbRef(rtdb,'presence/'+u.uid),s=>{const state=s.val()?.state;const sm=el.querySelectorAll('small')[1];if(sm)sm.textContent=(u.bio?u.bio+' · ':'')+(state==='online'?'🟢 Online':'Offline')});
+ el.onclick=()=>showPerson(u);list.append(el)});
+}
+$('searchUsers').addEventListener('input',()=>renderPeople($('searchUsers').value));
+function subscribeFriendRequests(){if(requestsUnsub)requestsUnsub();requestsUnsub=onSnapshot(query(collection(db,'friendRequests'),where('to','==',me.uid),where('status','==','pending')),snap=>{snap.docs.forEach(d=>{if(requestIds.has(d.id))return;requestIds.add(d.id);const req=d.data(),sender=allUsers.find(u=>u.uid===req.from);if(sender)showRequest(d.id,sender)})},err=>console.warn('Friend requests:',err.message))}
+function showRequest(id,sender){const b=document.createElement('div');b.className='banner';b.id='request-'+id;b.innerHTML=`<b>${esc(sender.displayName||sender.username)}</b> (@${esc(sender.username||'')}) sent you a friend request. <button class="mini">Accept</button>`;b.querySelector('button').onclick=async()=>{try{await updateDoc(doc(db,'users',me.uid),{friends:arrayUnion(sender.uid)});await updateDoc(doc(db,'users',sender.uid),{friends:arrayUnion(me.uid)});await updateDoc(doc(db,'friendRequests',id),{status:'accepted'});profile.friends=[...new Set([...(profile.friends||[]),sender.uid])];b.remove();renderFriends();toast('Friend request accepted!')}catch(e){toast('Could not accept: '+e.message)}};$('homePanel').prepend(b)}
+function renderFriends(){const list=$('friendsList');if(!list)return;list.innerHTML='';const ids=new Set(profile.friends||[]);const friends=allUsers.filter(u=>ids.has(u.uid));if(!friends.length){list.innerHTML='<div style="padding:12px">No friends yet. Search Home and send friend requests.</div>';return}friends.forEach(u=>{const el=document.createElement('div');el.className='user';el.innerHTML=`<img class="avatar" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><div class="meta"><strong>${esc(u.displayName||u.username)}</strong><small>@${esc(u.username||'')}</small></div><button class="mini">Chat</button>`;el.querySelector('button').onclick=()=>startChat(u);list.append(el)})}
+function renderFollowing(){const list=$('followingList');if(!list)return;list.innerHTML='';const ids=new Set(profile.following||[]);const people=allUsers.filter(u=>ids.has(u.uid));if(!people.length){list.innerHTML='<div style="padding:12px">You are not following anyone yet. Find people on Home and tap Follow.</div>';return}people.forEach(u=>{const el=document.createElement('div');el.className='user';el.innerHTML=`<img class="avatar" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><div class="meta"><strong>${esc(u.displayName||u.username)}</strong><small>@${esc(u.username||'')} · ${Array.isArray(u.friends)?u.friends.length:0} friends</small></div><button class="mini">Message</button>`;el.querySelector('button').onclick=()=>startChat(u);list.append(el)})}
+function renderProfile(){const p=$('profileCard');p.innerHTML=`<img class="avatar" style="width:76px;height:76px" src="${avatarURL(profile.photoURL,profile.displayName||profile.username)}"><h2>${esc(profile.displayName||profile.username||'Your name')}</h2><div class="username">@${esc(profile.username||'')}</div><p>${esc(profile.bio||'No bio yet. Add something about yourself!')}</p><div class="statrow"><span class="statpill">👥 ${Array.isArray(profile.friends)?profile.friends.length:0} friends</span><span class="statpill">➕ ${Array.isArray(profile.following)?profile.following.length:0} following</span></div><div class="profilefield"><b>Date of birth</b><span>${esc(profile.dob||'Not added')}</span></div><button class="primary" id="profileEditBtn">Edit profile</button>`;$('profileEditBtn').onclick=openProfileEditor}
+function openProfileEditor(){$('editDisplayName').value=profile.displayName||profile.username||'';$('editUsername').value=profile.username||'';$('editUsername').disabled=false;$('editBio').value=profile.bio||'';$('editDob').value=profile.dob||'';$('editPhoto').value='';$('profileModal').classList.remove('hidden')}
+$('editProfile').onclick=openProfileEditor;$('cancelProfile').onclick=()=>$('profileModal').classList.add('hidden');
+$('saveProfile').onclick=async()=>{try{
+ const displayName=$('editDisplayName').value.trim();
+ const newUsername=$('editUsername').value.trim().toLowerCase();
+ if(!displayName)throw Error('Please enter a display name');
+ if(!/^[a-z0-9_]{3,20}$/.test(newUsername))throw Error('Username must be 3–20 characters: letters, numbers or underscores.');
+ const updates={displayName,bio:$('editBio').value.trim(),dob:$('editDob').value};
+ if(newUsername!==profile.username){
+   const newRef=doc(db,'usernames',newUsername),oldRef=doc(db,'usernames',profile.username);
+   const existing=await getDoc(newRef);
+   if(existing.exists() && existing.data().uid!==me.uid)throw Error('That username is already taken.');
+   await setDoc(newRef,{uid:me.uid,username:newUsername,createdAt:serverTimestamp()});
+   if(profile.username && profile.username!==newUsername){const old=await getDoc(oldRef);if(old.exists()&&old.data().uid===me.uid)await deleteDoc(oldRef);}
+   updates.username=newUsername;
+ }
+ const file=$('editPhoto').files[0];
+ if(file){if(file.size>5*1024*1024)throw Error('Photo must be under 5 MB');if(!file.type.startsWith('image/'))throw Error('Please choose an image file.');const r=storageRef(storage,'profilePhotos/'+me.uid+'/'+Date.now());await uploadBytes(r,file);updates.photoURL=await getDownloadURL(r)}
+ await updateDoc(doc(db,'users',me.uid),updates);
+ profile={...profile,...updates};$('myName').textContent=profile.displayName;$('myBioPreview').textContent=profile.bio||('@'+profile.username);$('myAvatar').src=avatarURL(profile.photoURL,profile.displayName);renderProfile();$('profileModal').classList.add('hidden');toast('Profile updated!');
+ }catch(e){toast('Profile update failed: '+e.message)}};
+document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x===btn));
+  ['home','friends','chats','following','profile','ai'].forEach(v=>{const panel=$(v+'Panel');if(panel)panel.classList.toggle('hidden',v!==btn.dataset.view)});
+  const isAI=btn.dataset.view==='ai';
+  $('aiWorkspace').classList.toggle('hidden',!isAI);
+  if(isAI){
+    ['welcome','messages','typingStatus','replyPreview','composer','peerAvatar'].forEach(id=>$(id).classList.add('hidden'));
+    $('peerName').textContent='✨ eMessage AI';$('peerStatus').textContent='Your AI study and question assistant';
+  }else{
+    $('welcome').classList.toggle('hidden',!!activeChatId);
+    $('messages').classList.toggle('hidden',!activeChatId);
+    $('composer').classList.toggle('hidden',!activeChatId);
+    $('peerAvatar').classList.toggle('hidden',!activePeer);
+    $('typingStatus').classList.toggle('hidden',!activeChatId);
+  }
+  if(!isAI && btn.dataset.view==='friends')renderFriends();
+  else if(btn.dataset.view==='profile')renderProfile();
+  else if(btn.dataset.view==='following')renderFollowing();
+});
+function showPerson(u){$('welcome').classList.remove('hidden');$('messages').classList.add('hidden');$('composer').classList.add('hidden');$('peerAvatar').classList.remove('hidden');$('peerAvatar').src=avatarURL(u.photoURL,u.displayName||u.username);$('peerName').textContent=u.displayName||u.username;$('peerStatus').textContent='@'+u.username+' · '+(u.bio||'eMessage member');$('welcome').innerHTML=`<div><img class="avatar" style="width:80px;height:80px" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><h2>${esc(u.displayName||u.username)}</h2><p>@${esc(u.username||'')}</p><p>${esc(u.bio||'No bio yet')}</p><div class="statrow"><span class="statpill">👥 ${Array.isArray(u.friends)?u.friends.length:0} friends</span></div><button class="primary" id="profileChat">Message</button><button class="mini" id="profileFollow" style="margin-left:8px">Follow</button></div>`;$('profileChat').onclick=()=>startChat(u);$('profileFollow').onclick=async()=>{try{const ids=new Set(profile.following||[]);if(ids.has(u.uid)){ids.delete(u.uid);await updateDoc(doc(db,'users',me.uid),{following:arrayRemove(u.uid)});toast('Unfollowed')}else{ids.add(u.uid);await updateDoc(doc(db,'users',me.uid),{following:arrayUnion(u.uid)});toast('Following '+(u.displayName||u.username))}profile.following=[...ids];renderFollowing()}catch(e){toast('Follow failed: '+e.message)}}}
+async function startChat(peer){try{const members=[me.uid,peer.uid].sort(),chatId=members.join('_');const chatRef=doc(db,'chats',chatId),snap=await getDoc(chatRef);if(!snap.exists())await setDoc(chatRef,{members,createdAt:serverTimestamp(),lastMessage:'',updatedAt:serverTimestamp()});activePeer=peer;activeChatId=chatId;$('peerAvatar').classList.remove('hidden');$('peerAvatar').src=avatarURL(peer.photoURL,peer.displayName||peer.username);$('peerName').textContent=peer.displayName||peer.username;$('peerStatus').textContent='@'+peer.username;$('welcome').classList.add('hidden');$('messages').classList.remove('hidden');$('composer').classList.remove('hidden');if(chatUnsub)chatUnsub();chatUnsub=onSnapshot(query(collection(db,'chats',chatId,'messages'),limit(200)),snap=>{const box=$('messages');box.innerHTML='';snap.docs.slice().sort((a,b)=>(a.data().createdAt?.seconds||0)-(b.data().createdAt?.seconds||0)).forEach(d=>{const m=d.data(),el=document.createElement('div');el.className='bubble'+(m.senderId===me.uid?' mine':'');
+        if(m.senderId!==me.uid && !seenMessageIds.has(d.id) && m.createdAt){seenMessageIds.add(d.id);toast('💬 New message from '+(peer.displayName||peer.username));if('Notification' in window && Notification.permission==='granted' && document.hidden){try{new Notification('eMessage · '+(peer.displayName||peer.username),{body:m.text||'Sent you a message'})}catch{}}}el.innerHTML=`${esc(m.text)}<small>${m.senderId===me.uid?'You':'Friend'} · ${m.readBy?.includes(peer.uid)?'Read':'Sent'}</small>`;box.append(el)});box.scrollTop=box.scrollHeight},err=>toast('Messages unavailable: '+err.message))}catch(e){toast('Could not open chat: '+e.message)}}
+$('composer').onsubmit=async e=>{e.preventDefault();const text=$('messageInput').value.trim();if(!text||!activeChatId)return;try{await addDoc(collection(db,'chats',activeChatId,'messages'),{senderId:me.uid,text,readBy:[me.uid],createdAt:serverTimestamp()});await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,updatedAt:serverTimestamp()});$('messageInput').value=''}catch(err){toast('Message failed: '+err.message)}};
+function subscribeChats(){if(chatsUnsub)chatsUnsub();chatsUnsub=onSnapshot(query(collection(db,'chats'),where('members','array-contains',me.uid),limit(50)),snap=>{const list=$('chatList');list.innerHTML='';if(snap.empty){list.innerHTML='<div style="padding:12px">No chats yet. Find someone on Home and tap Chat.</div>';return}snap.docs.slice().sort((a,b)=>(b.data().updatedAt?.seconds||0)-(a.data().updatedAt?.seconds||0)).forEach(d=>{const c=d.data(),peerId=c.members.find(id=>id!==me.uid),u=allUsers.find(x=>x.uid===peerId)||{uid:peerId,username:'User'};const el=document.createElement('div');el.className='user';el.innerHTML=`<img class="avatar" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><div class="meta"><strong>${esc(u.displayName||u.username)}</strong><small>${esc(c.lastMessage||'Conversation')}</small></div>`;el.onclick=()=>startChat(u);list.append(el)})},err=>console.warn('Chats:',err.message))}
+
+// ===== eMessage upgrade layer =====
+// Authentication functions above are intentionally left as they were.
+let replyToMessage=null,typingTimer=null,typingUnsub=null,typingWriteRef=null,seenMessageIds=new Set();
+const originalToast=toast;
+function safeToast(message){originalToast(message)}
+$('notifyToggle').onclick=async()=>{if(!('Notification' in window)){toast('This browser does not support notifications');return}try{const permission=await Notification.requestPermission();toast(permission==='granted'?'Notifications enabled while eMessage is open.':'Notification permission was not granted')}catch{toast('Could not enable notifications')}};
+$('themeToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  const dark=document.body.classList.contains('dark');
+  $('themeToggle').textContent=dark?'☀️ Light':'🌙 Theme';
+  try{localStorage.setItem('emessage-theme',dark?'dark':'light')}catch{}
+};
+try{const savedTheme=localStorage.getItem('emessage-theme');if(savedTheme!=='light'){document.body.classList.add('dark');$('themeToggle').textContent='☀️ Light'}}catch{document.body.classList.add('dark')}
+function resetReply(){replyToMessage=null;$('replyPreview').classList.add('hidden');$('replyPreview').textContent='';$('sendButton').textContent='Send'}
+function quoteMessage(m){replyToMessage={id:m.id,text:m.text,senderId:m.senderId};$('replyPreview').textContent='Replying to: '+(m.text||'').slice(0,120)+'  (tap ✕ to cancel';$('replyPreview').classList.remove('hidden');$('sendButton').textContent='Send reply';$('messageInput').focus()}
+$('replyPreview').onclick=resetReply;
+
+// Replace chat rendering with a chronological, interactive renderer.
+// Keep the same chat collection and existing auth/session variables.
+const originalStartChat=startChat;
+startChat=async function(peer){
+  resetReply();
+  await originalStartChat(peer);
+};
+const originalComposerSubmit=$('composer').onsubmit;
+$('messageInput').addEventListener('input',()=>{if(!typingWriteRef)return;set(typingWriteRef,true).catch(()=>{});clearTimeout(typingTimer);typingTimer=setTimeout(()=>set(typingWriteRef,false).catch(()=>{}),1400)});
+$('composer').onsubmit=async e=>{
+  e.preventDefault();
+  const text=$('messageInput').value.trim();
+  if(!text||!activeChatId)return;
+  try{
+    const payload={senderId:me.uid,text,readBy:[me.uid],createdAt:serverTimestamp()};
+    if(replyToMessage)payload.replyTo={id:replyToMessage.id,text:replyToMessage.text,senderId:replyToMessage.senderId};
+    await addDoc(collection(db,'chats',activeChatId,'messages'),payload);
+    await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,updatedAt:serverTimestamp()});
+    $('messageInput').value='';resetReply();if(typingWriteRef)set(typingWriteRef,false).catch(()=>{});
+  }catch(err){toast('Message failed: '+err.message)}
+};
+
+// Intercept the existing chat snapshot renderer and add reply/reaction/edit/delete/read behavior.
+// This replaces only startChat's snapshot listener setup, not auth.
+startChat=async function(peer){
+  try{
+    const members=[me.uid,peer.uid].sort(),chatId=members.join('_');
+    const chatRef=doc(db,'chats',chatId),chatSnap=await getDoc(chatRef);
+    if(!chatSnap.exists())await setDoc(chatRef,{members,createdAt:serverTimestamp(),lastMessage:'',updatedAt:serverTimestamp()});
+    activePeer=peer;activeChatId=chatId;
+    if(typingUnsub){typingUnsub();typingUnsub=null}
+    typingWriteRef=dbRef(rtdb,'typing/'+chatId+'/'+me.uid);
+    set(typingWriteRef,false).catch(()=>{});
+    typingUnsub=onValue(dbRef(rtdb,'typing/'+chatId+'/'+peer.uid),snap=>{$('typingStatus').textContent=snap.val()===true?(peer.displayName||peer.username)+' is typing…':''});
+    $('peerAvatar').classList.remove('hidden');$('peerAvatar').src=avatarURL(peer.photoURL,peer.displayName||peer.username);
+    $('peerName').textContent=peer.displayName||peer.username;$('peerStatus').textContent='@'+peer.username+' · eMessage chat';
+    $('welcome').classList.add('hidden');$('messages').classList.remove('hidden');$('composer').classList.remove('hidden');
+    resetReply();if(chatUnsub)chatUnsub();
+    chatUnsub=onSnapshot(query(collection(db,'chats',chatId,'messages'),limit(200)),async snap=>{
+      const box=$('messages');box.innerHTML='';
+      const docs=snap.docs.slice().sort((a,b)=>(a.data().createdAt?.seconds||0)-(b.data().createdAt?.seconds||0));
+      for(const d of docs){
+        const m=d.data(),el=document.createElement('div');el.className='bubble'+(m.senderId===me.uid?' mine':'');
+        if(m.senderId!==me.uid && !seenMessageIds.has(d.id) && m.createdAt){seenMessageIds.add(d.id);toast('💬 New message from '+(peer.displayName||peer.username));if('Notification' in window && Notification.permission==='granted' && document.hidden){try{new Notification('eMessage · '+(peer.displayName||peer.username),{body:m.text||'Sent you a message'})}catch{}}}
+        const quote=m.replyTo?`<div class="replyquote">↪ ${esc((m.replyTo.text||'').slice(0,100))}</div>`:'';
+        const reactionSummary=Object.entries(m.reactions||{}).map(([emoji,uids])=>`${emoji} ${uids.length}`).join(' · ');
+        const status=m.senderId===me.uid?(m.readBy?.includes(peer.uid)?'Read':'Sent'):'';
+        el.innerHTML=`${quote}<div class="msgtext">${esc(m.text||'')}</div><small>${m.senderId===me.uid?'You':esc(peer.displayName||peer.username)} · ${status}</small><div class="bubble-tools"><button data-act="reply">↩ Reply</button><button data-act="react">❤️ React</button><button data-act="copy">Copy</button>${m.senderId===me.uid?'<button data-act="edit">Edit</button><button data-act="delete">Delete</button>':''}${reactionSummary?`<button data-act="reactionview">${esc(reactionSummary)}</button>`:''}</div>`;
+        el.querySelector('[data-act="reply"]').onclick=()=>quoteMessage({...m,id:d.id});
+        el.querySelector('[data-act="react"]').onclick=async()=>{const emoji=prompt('Choose a reaction: ❤️ 😂 👍 😮 😢 🔥','❤️');if(!emoji)return;try{const current=m.reactions||{},users=current[emoji]||[];const next=users.includes(me.uid)?users.filter(x=>x!==me.uid):[...users,me.uid];await updateDoc(doc(db,'chats',chatId,'messages',d.id),{[`reactions.${emoji}`]:next})}catch(err){toast('Reaction failed: '+err.message)}};
+        el.querySelector('[data-act="copy"]').onclick=async()=>{try{await navigator.clipboard.writeText(m.text||'');toast('Message copied')}catch{toast('Copy is not supported in this browser')}};
+        const edit=el.querySelector('[data-act="edit"]');if(edit)edit.onclick=async()=>{const revised=prompt('Edit your message:',m.text||'');if(revised===null)return;if(!revised.trim())return toast('Message cannot be empty');try{await updateDoc(doc(db,'chats',chatId,'messages',d.id),{text:revised.trim(),edited:true,editedAt:serverTimestamp()});toast('Message edited')}catch(err){toast('Edit failed: '+err.message)}};
+        const del=el.querySelector('[data-act="delete"]');if(del)del.onclick=async()=>{if(!confirm('Delete this message?'))return;try{await deleteDoc(doc(db,'chats',chatId,'messages',d.id));toast('Message deleted')}catch(err){toast('Delete failed: '+err.message)}};
+        box.append(el);
+        if(m.senderId!==me.uid && !(m.readBy||[]).includes(me.uid)){updateDoc(doc(db,'chats',chatId,'messages',d.id),{readBy:arrayUnion(me.uid)}).catch(()=>{});}
+      }
+      box.scrollTop=box.scrollHeight;
+    },err=>toast('Messages unavailable: '+err.message));
+  }catch(e){toast('Could not open chat: '+e.message)}
+};
+
+// Friend controls: reciprocal remove, request state, and basic block list.
+async function removeFriend(uid){
+  if(!confirm('Remove this friend?'))return;
+  try{await updateDoc(doc(db,'users',me.uid),{friends:arrayRemove(uid)});await updateDoc(doc(db,'users',uid),{friends:arrayRemove(me.uid)});profile.friends=(profile.friends||[]).filter(x=>x!==uid);renderFriends();toast('Friend removed')}catch(e){toast('Could not remove friend: '+e.message)}
+}
+const originalRenderFriends=renderFriends;
+renderFriends=function(){
+  const list=$('friendsList');if(!list)return;list.innerHTML='';
+  const ids=new Set(profile.friends||[]),friends=allUsers.filter(u=>ids.has(u.uid));
+  if(!friends.length){list.innerHTML='<div style="padding:12px">No friends yet. Search Home and send friend requests.</div>';return}
+  friends.forEach(u=>{const el=document.createElement('div');el.className='user';
+    el.innerHTML=`<img class="avatar" src="${avatarURL(u.photoURL,u.displayName||u.username)}"><div class="meta"><strong>${esc(u.displayName||u.username)}</strong><small>@${esc(u.username||'')} · ${Array.isArray(u.friends)?u.friends.length:0} friends</small></div><div class="useractions"><button class="mini chat">Chat</button><button class="mini remove">Remove</button></div>`;
+    el.querySelector('.chat').onclick=()=>startChat(u);el.querySelector('.remove').onclick=()=>removeFriend(u.uid);list.append(el)
+  })
+};
+
+// Add visible notification area and friend-request count, without altering authentication.
+const notif=document.createElement('div');notif.id='emessageNotice';notif.className='notificationbox hidden';
+$('homePanel').prepend(notif);
+function showNotice(text){notif.textContent=text;notif.classList.remove('hidden')}
+function hideNotice(){notif.classList.add('hidden')}
+notif.onclick=hideNotice;
+const originalShowRequest=showRequest;
+showRequest=function(id,sender){
+  originalShowRequest(id,sender);
+  showNotice('🔔 New friend request from '+(sender.displayName||sender.username)+'. Tap this notice to dismiss.');
+};
+
+// Add a block action on user profile cards. Block state is stored in the current user's profile.
+// Firebase rules must permit users to update their own blockedUsers field.
+const originalShowPerson=showPerson;
+showPerson=function(u){
+  originalShowPerson(u);
+  const wrap=$('welcome').firstElementChild;
+  if(wrap && !wrap.querySelector('#blockPerson')){
+    const btn=document.createElement('button');btn.className='mini';btn.id='blockPerson';btn.style.marginLeft='8px';btn.textContent='Block user';
+    btn.onclick=async()=>{if(!confirm('Block this user? This only stores a block preference; security rules must enforce it.'))return;try{await updateDoc(doc(db,'users',me.uid),{blockedUsers:arrayUnion(u.uid)});profile.blockedUsers=[...(profile.blockedUsers||[]),u.uid];toast('User blocked')}catch(e){toast('Could not block user: '+e.message)}};
+    wrap.append(btn);
+  }
+};
+
+// Message input supports Enter to send and Shift+Enter for a newline where browser permits.
+$('messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('composer').requestSubmit()}});
+
+
+// ===== eMessage AI chat =====
+function addAIMessage(role,text){
+  const welcome=$('aiMessages').querySelector('.ai-welcome');if(welcome)welcome.remove();
+  const bubble=document.createElement('div');bubble.className='ai-bubble '+(role==='user'?'user':'assistant');
+  const label=document.createElement('span');label.className='ai-label';label.textContent=role==='user'?'YOU':'EMESSAGE AI';
+  const body=document.createElement('div');body.textContent=text;
+  bubble.append(label,body);$('aiMessages').append(bubble);$('aiMessages').scrollTop=$('aiMessages').scrollHeight;return body;
+}
+async function askAI(prompt){
+  const question=String(prompt||'').trim();if(!question||aiBusy)return;
+  aiBusy=true;$('aiSend').disabled=true;$('aiSend').textContent='…';
+  addAIMessage('user',question);$('aiInput').value='';
+  const answerNode=addAIMessage('assistant','Thinking…');
+  try{
+    // Stream the answer so users see words as soon as the model produces them.
+    const stream=await aiChatSession.sendMessageStream(question);
+    answerNode.textContent='';
+    for await (const chunk of stream.stream){
+      const piece=chunk.text();
+      if(piece){answerNode.textContent+=piece;$('aiMessages').scrollTop=$('aiMessages').scrollHeight;}
+    }
+    if(!answerNode.textContent.trim()){
+      const finalResponse=await stream.response;
+      answerNode.textContent=finalResponse.text()||'I could not create a text answer. Please try again.';
+    }
+  }catch(err){
+    console.error('eMessage AI error:',err);
+    answerNode.textContent='Sorry, I could not answer right now. Check that Firebase AI Logic is enabled for this Firebase project and try again. Details: '+(err.message||'Unknown error');
+  }finally{
+    aiBusy=false;$('aiSend').disabled=false;$('aiSend').textContent='Send ↑';$('aiMessages').scrollTop=$('aiMessages').scrollHeight;$('aiInput').focus();
+  }
+}
+$('aiForm').addEventListener('submit',e=>{e.preventDefault();askAI($('aiInput').value)});
+$('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('aiForm').requestSubmit()}});
+document.querySelectorAll('.ai-suggestions button').forEach(btn=>btn.addEventListener('click',()=>askAI(btn.dataset.prompt)));
+$('newAIChat').onclick=()=>{aiChatSession=aiModel.startChat();$('aiMessages').innerHTML='<div class="ai-welcome"><div class="ai-orb">✦</div><h2>New conversation</h2><p>What would you like to learn today?</p><div class="ai-suggestions"><button type="button" data-prompt="Explain a difficult topic in simple terms.">🌱 Explain a topic</button><button type="button" data-prompt="Help me solve this problem step by step.">➗ Solve a problem</button><button type="button" data-prompt="Help me plan a school assignment.">📚 Plan an assignment</button></div></div>';$('aiMessages').querySelectorAll('.ai-suggestions button').forEach(btn=>btn.onclick=()=>askAI(btn.dataset.prompt));};
+
+</script>
+</body>
+</html>
